@@ -1,0 +1,5 @@
+//(a). step response
+
+>> sys=tf([2 5],[1 4 6])
+>> step(sys)
+
