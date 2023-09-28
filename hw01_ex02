@@ -1,4 +1,5 @@
 >> x=linspace(-2*pi,2*pi)
 >> y=-(x.^3)
 >> plot(x,y)
->> 
+>> z=3*tan(x)
+>>plot(x,z)
