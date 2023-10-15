@@ -55,8 +55,34 @@ def NewRowGenerator(cnt,upper,lower):
                 nr[ny]=nr[ny]+adder[ny]
 
         return [nr,aze]
+def compute(deg):
+    IMG=0
+    for cnt in range(deg-2,-1,-1):
+        [nr[cnt],aze]=NewRowGenerator(cnt,nr[cnt+2],nr[cnt+1])
+        print(f's^{cnt} : {nr[cnt]}')
+        IMG=IMG+aze
+    return IMG
+
+def FindRoot(deg,IMG):
+    RHS=0
+    for i in range(deg,1,-1):
+        if((nr[i][0]*nr[i-1][0])<0):
+            RHS=RHS+1
+            print(f'switch between {i+1} and {i}')
+    LHS=deg-IMG-RHS
+    inertial=[LHS,IMG,RHS]
+    print('inertial=',inertial)
+    return inertial
+
+def stable(inertial):
+    if(inertial[2]!=0):
+        print('unstable system')
+    elif(inertial[1]==0):
+        print('asymptotically stable system')
+    else:
+        print('the system may be marginally stable')
 ############### main function ###############
-ipt_str='1 2 8 11 16 12'
+ipt_str='1 -2 3 10'
 arr=list(map(float,ipt_str.split()))
 deg=len(arr)-1
 print(r'##### your input #####')
@@ -69,18 +95,10 @@ nr=nrGenerate(arr)
 print()
 print(r'##### Routh Table #####')
 [nr[deg],nr[deg-1]]=UpperLower(arr)
+
 print(f's^{deg} : {nr[deg]}')
 print(f's^{deg-1} : {nr[deg-1]}')
-IMG=0
-RHS=0
-for cnt in range(deg-2,-1,-1):
-    [nr[cnt],aze]=NewRowGenerator(cnt,nr[cnt+2],nr[cnt+1])
-    print(f's^{cnt} : {nr[cnt]}')
-    IMG=IMG+aze
 
-for i in range(deg,1,-1):
-    if((nr[i][0]*nr[i-1][0])<0):
-        RHS=RHS+1
-
-LHS=deg-IMG-RHS
-print(f'inertial:({LHS},{IMG},{RHS})')
+IMG=compute(deg)
+inertial=FindRoot(deg,IMG)
+stable(inertial)
