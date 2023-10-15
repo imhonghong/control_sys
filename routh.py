@@ -26,6 +26,8 @@ def clz(lst):
     for element in range(0,len(lst)):
         if(lst[element]==0):
             leadz=leadz+1
+        else:
+            break
     return leadz
 
 def NewRowGenerator(cnt,upper,lower):
@@ -37,23 +39,24 @@ def NewRowGenerator(cnt,upper,lower):
         leadz=clz(nr)
 
         #all zero exception
+        aze=0
         if(leadz==len(nr)):
+            aze=aze+2
             print(f'for s^{cnt} , all zero detected, substitude by differential of s^{cnt+1}')
             for nx in range(0,len(lower)):
                 nr[nx]=lower[nx]*((cnt+1)-2*nx)
         
         #leading zero exception
-        if(leadz!=len(nr)&leadz!=0):
+        elif(leadz!=0):
             print(f'for s^{cnt} , leading {leadz} zero detected, substitude by moving terms')
             adder=nrGenerate(nr)
-            for nx in range(0,len(adder)-leadz):
-                adder[nx]=pow(-1,leadz)*nr[nx+leadz]
-            for ele in range(0,len(nr)):
-                nr[ele]=nr[ele]+adder[ele]
+            for ny in range(0,len(adder)-leadz):
+                adder[ny]=pow(-1,leadz)*nr[ny+leadz]
+                nr[ny]=nr[ny]+adder[ny]
 
-        return nr
+        return [nr,aze]
 ############### main function ###############
-ipt_str='1 2 3 4 1'
+ipt_str='1 2 8 11 16 12'
 arr=list(map(float,ipt_str.split()))
 deg=len(arr)-1
 print(r'##### your input #####')
@@ -68,8 +71,16 @@ print(r'##### Routh Table #####')
 [nr[deg],nr[deg-1]]=UpperLower(arr)
 print(f's^{deg} : {nr[deg]}')
 print(f's^{deg-1} : {nr[deg-1]}')
-
+IMG=0
+RHS=0
 for cnt in range(deg-2,-1,-1):
-    nr[cnt]=NewRowGenerator(cnt,nr[cnt+2],nr[cnt+1])
+    [nr[cnt],aze]=NewRowGenerator(cnt,nr[cnt+2],nr[cnt+1])
     print(f's^{cnt} : {nr[cnt]}')
-    
+    IMG=IMG+aze
+
+for i in range(deg,1,-1):
+    if((nr[i][0]*nr[i-1][0])<0):
+        RHS=RHS+1
+
+LHS=deg-IMG-RHS
+print(f'inertial:({LHS},{IMG},{RHS})')
